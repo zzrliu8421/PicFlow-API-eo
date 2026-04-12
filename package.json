@@ -1,0 +1,27 @@
+{
+  "name": "picflow-api",
+  "version": "3.0.0",
+  "description": "PicFlow API - 专业的随机图片处理服务",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "wrangler dev src/index.ts",
+    "build": "wrangler deploy --dry-run --outdir=dist",
+    "deploy": "wrangler deploy"
+  },
+  "keywords": [
+    "picflow",
+    "api",
+    "image",
+    "random",
+    "hono"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "hono": "^4.12.12"
+  },
+  "devDependencies": {
+    "wrangler": "^3.114.17"
+  }
+}
