@@ -148,11 +148,65 @@ function build() {
   fs.writeFileSync(indexHtmlPath, indexHtmlContent);
   console.log('Created index.html');
   
+  // 创建API目录
+  const apiDir = path.join(process.cwd(), 'dist', 'api');
+  fs.mkdirSync(apiDir, { recursive: true });
+  
   // 创建API处理文件
-  const apiJsPath = path.join(process.cwd(), 'dist', 'api.js');
-  const apiJsContent = '// API处理逻辑\nfunction handleApiRequest(request) {\n  const url = new URL(request.url);\n  const params = url.searchParams;\n  \n  // 处理API参数\n  const count = Math.max(1, Math.min(50, parseInt(params.get(\'count\') || \'1\')));\n  const type = params.get(\'type\') || \'pc\';\n  const format = params.get(\'format\') || \'json\';\n  \n  // 模拟图片数据\n  const images = [];\n  const baseUrl = url.origin;\n  \n  for (let i = 0; i < count; i++) {\n    images.push({\n      url: baseUrl + \'/converted/\' + type + \'/webp/\' + (i + 1) + \'.webp\',\n      format: \'webp\',\n      type: type\n    });\n  }\n  \n  // 返回JSON响应\n  return new Response(JSON.stringify({\n    success: true,\n    count: images.length,\n    images: images\n  }), {\n    headers: {\n      \'Content-Type\': \'application/json\'\n    }\n  });\n}\n\n// 处理请求\naddEventListener(\'fetch\', (event) => {\n  const request = event.request;\n  const url = new URL(request.url);\n  \n  if (url.pathname === \'/api\') {\n    event.respondWith(handleApiRequest(request));\n  } else if (url.pathname === \'/\') {\n    event.respondWith(fetch(\'index.html\'));\n  }\n});\n';
-  fs.writeFileSync(apiJsPath, apiJsContent);
-  console.log('Created api.js');
+  const apiIndexPath = path.join(apiDir, 'index.html');
+  const apiIndexContent = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>API Response</title>
+</head>
+<body>
+  <script>
+    // 解析URL参数
+    function getParams() {
+      const params = {};
+      const search = window.location.search.substring(1);
+      search.split('&').forEach(pair => {
+        const [key, value] = pair.split('=');
+        params[key] = decodeURIComponent(value);
+      });
+      return params;
+    }
+    
+    // 生成API响应
+    function generateResponse() {
+      const params = getParams();
+      const count = Math.max(1, Math.min(50, parseInt(params.count || '1')));
+      const type = params.type || 'pc';
+      
+      const images = [];
+      const baseUrl = window.location.origin;
+      
+      for (let i = 0; i < count; i++) {
+        images.push({
+          url: baseUrl + '/converted/' + type + '/webp/' + (i + 1) + '.webp',
+          format: 'webp',
+          type: type
+        });
+      }
+      
+      const response = {
+        success: true,
+        count: images.length,
+        images: images
+      };
+      
+      // 输出JSON响应
+      document.body.innerHTML = '<pre>' + JSON.stringify(response, null, 2) + '</pre>';
+    }
+    
+    // 执行生成响应
+    generateResponse();
+  </script>
+</body>
+</html>`;
+  fs.writeFileSync(apiIndexPath, apiIndexContent);
+  console.log('Created API directory and index.html');
   
   console.log('Build completed successfully');
 
