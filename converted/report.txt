@@ -1,5 +1,6 @@
-生成时间: 周日 2025/08/31  1:48:11.32 
+Image Conversion Report 
+Generated on: 周六 2026/04/04 21:03:12.13 
 ========================== 
-成功转换: 27 个文件 
-转换失败: 0 个文件 
-输出目录: converted 
+Successfully converted: 297 files 
+Failed to convert: 0 files 
+Output directory: converted 

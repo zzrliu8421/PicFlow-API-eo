@@ -1,8 +1,0 @@
-name = "picflow-api"
-main = "src/index.ts"
-compatibility_date = "2024-07-01"
-compatibility_flags = ["nodejs_compat"]
-
-[site]
-bucket = "public"
-

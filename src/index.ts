@@ -34,22 +34,6 @@ function isMobile(userAgent: string): boolean {
 
 // 智能格式检测函数
 function detectOptimalFormat(userAgent: string): string {
-  // 检测是否支持AVIF (最新格式，最小文件)
-  if (userAgent.includes('Chrome/')) {
-    const matches = userAgent.match(/Chrome\/(\d+)/);
-    if (matches && matches[1] && parseInt(matches[1]) >= 85) {
-      return 'avif';
-    }
-  }
-  
-  // 检测Firefox对AVIF的支持
-  if (userAgent.includes('Firefox/')) {
-    const matches = userAgent.match(/Firefox\/(\d+)/);
-    if (matches && matches[1] && parseInt(matches[1]) >= 93) {
-      return 'avif';
-    }
-  }
-  
   // 检测是否支持WebP (广泛支持)
   if (userAgent.includes('Chrome') || 
       userAgent.includes('Opera') || 
@@ -252,7 +236,7 @@ app.get('/api', async (c) => {
     }
   } else {
     // 本地图片模式
-    const formats = ['jpeg', 'webp', 'avif'];
+    const formats = ['jpeg', 'webp'];
     const availableImages = [];
     
     try {
@@ -320,7 +304,7 @@ app.get('/api', async (c) => {
       const optimalFormat = detectOptimalFormat(userAgent);
       const filename = image.filename.split('.')[0];
       redirectUrl = `${baseUrl}/converted/${type}/${optimalFormat}/${filename}.${optimalFormat}`;
-    } else if (!external && imageFormat !== 'original' && ['jpeg', 'webp', 'avif'].includes(imageFormat)) {
+    } else if (!external && imageFormat !== 'original' && ['jpeg', 'webp'].includes(imageFormat)) {
       const filename = image.filename.split('.')[0];
       redirectUrl = `${baseUrl}/converted/${type}/${imageFormat}/${filename}.${imageFormat}`;
     }
@@ -329,26 +313,26 @@ app.get('/api', async (c) => {
   }
   
   // 智能格式处理
-  if (!external) {
-    if (imageFormat === 'auto') {
-      const optimalFormat = detectOptimalFormat(userAgent);
-      for (const image of mockImages) {
-        const filename = image.filename.split('.')[0];
-        image.url = `${baseUrl}/converted/${type}/${optimalFormat}/${filename}.${optimalFormat}`;
-        image.format = optimalFormat;
-        image.converted = true;
-        image.optimal_format = optimalFormat;
-      }
-    } else if (imageFormat !== 'original' && ['jpeg', 'webp', 'avif'].includes(imageFormat)) {
-      for (const image of mockImages) {
-        const filename = image.filename.split('.')[0];
-        image.url = `${baseUrl}/converted/${type}/${imageFormat}/${filename}.${imageFormat}`;
-        image.format = imageFormat;
-        image.converted = true;
-        image.requested_format = imageFormat;
+    if (!external) {
+      if (imageFormat === 'auto') {
+        const optimalFormat = detectOptimalFormat(userAgent);
+        for (const image of mockImages) {
+          const filename = image.filename.split('.')[0];
+          image.url = `${baseUrl}/converted/${type}/${optimalFormat}/${filename}.${optimalFormat}`;
+          image.format = optimalFormat;
+          image.converted = true;
+          image.optimal_format = optimalFormat;
+        }
+      } else if (imageFormat !== 'original' && ['jpeg', 'webp'].includes(imageFormat)) {
+        for (const image of mockImages) {
+          const filename = image.filename.split('.')[0];
+          image.url = `${baseUrl}/converted/${type}/${imageFormat}/${filename}.${imageFormat}`;
+          image.format = imageFormat;
+          image.converted = true;
+          image.requested_format = imageFormat;
+        }
       }
     }
-  }
   
   // 根据格式返回数据
   if (format === 'text' || format === 'url') {
