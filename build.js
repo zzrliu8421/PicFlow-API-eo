@@ -173,21 +173,50 @@ function build() {
       return params;
     }
     
+    // 获取随机图片
+    function getRandomImage(type, index) {
+      const baseUrl = window.location.origin;
+      const formats = ['webp', 'avif', 'jpeg'];
+      const format = formats[Math.floor(Math.random() * formats.length)];
+      
+      // 随机生成图片编号
+      const maxImages = type === 'pc' ? 3 : 6;
+      const randomNum = Math.floor(Math.random() * maxImages) + 1;
+      
+      return {
+        url: baseUrl + '/converted/' + type + '/' + format + '/' + randomNum + '.' + format,
+        format: format,
+        type: type
+      };
+    }
+    
+    // 处理重定向
+    function handleRedirect() {
+      const params = getParams();
+      if (params.return === 'redirect') {
+        const type = params.type || 'pc';
+        const image = getRandomImage(type, 0);
+        window.location.href = image.url;
+        return true;
+      }
+      return false;
+    }
+    
     // 生成API响应
     function generateResponse() {
+      // 先处理重定向
+      if (handleRedirect()) {
+        return;
+      }
+      
       const params = getParams();
       const count = Math.max(1, Math.min(50, parseInt(params.count || '1')));
       const type = params.type || 'pc';
       
       const images = [];
-      const baseUrl = window.location.origin;
       
       for (let i = 0; i < count; i++) {
-        images.push({
-          url: baseUrl + '/converted/' + type + '/webp/' + (i + 1) + '.webp',
-          format: 'webp',
-          type: type
-        });
+        images.push(getRandomImage(type, i));
       }
       
       const response = {
