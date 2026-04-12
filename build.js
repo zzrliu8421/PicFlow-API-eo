@@ -268,6 +268,26 @@ GET /api?format=jpeg&count=3
         </div>
       </div>
       
+      <div class="endpoint">
+        <h4>GET /image</h4>
+        <p>直接返回随机图片文件流</p>
+        
+        <h4>请求参数</h4>
+        <p>无</p>
+        
+        <h4>响应</h4>
+        <p>返回图片文件流，根据设备类型和浏览器支持自动选择最佳图片格式</p>
+        
+        <h4>使用示例</h4>
+        <div class="example">
+# 直接获取随机图片
+GET /image
+
+# 在HTML中使用
+<img src="/image" alt="Random image">
+        </div>
+      </div>
+      
       <h3>错误码</h3>
       <div class="error-code">
         <div class="parameter-name">400</div>
@@ -399,6 +419,57 @@ GET /api?format=jpeg&count=3
 </html>`;
   fs.writeFileSync(apiIndexPath, apiIndexContent);
   console.log('Created API directory and index.html');
+  
+  // 创建image目录
+  const imageDir = path.join(process.cwd(), 'dist', 'image');
+  fs.mkdirSync(imageDir, { recursive: true });
+  
+  // 创建image处理文件
+  const imageIndexPath = path.join(imageDir, 'index.html');
+  const imageIndexContent = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Image Response</title>
+</head>
+<body>
+  <script>
+    // 检测设备类型
+    function detectDeviceType() {
+      const userAgent = navigator.userAgent;
+      const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+      return mobileRegex.test(userAgent) ? 'pe' : 'pc';
+    }
+    
+    // 检测浏览器支持的图片格式
+    function detectImageFormat() {
+      const canvas = document.createElement('canvas');
+      if (canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0) {
+        return 'webp';
+      }
+      return 'jpeg';
+    }
+    
+    // 获取随机图片
+    function getRandomImage() {
+      const baseUrl = window.location.origin;
+      const type = detectDeviceType();
+      const format = detectImageFormat();
+      
+      // 随机生成图片编号
+      const maxImages = type === 'pc' ? 3 : 6;
+      const randomNum = Math.floor(Math.random() * maxImages) + 1;
+      
+      return baseUrl + '/converted/' + type + '/' + format + '/' + randomNum + '.' + format;
+    }
+    
+    // 重定向到随机图片
+    window.location.href = getRandomImage();
+  </script>
+</body>
+</html>`;
+  fs.writeFileSync(imageIndexPath, imageIndexContent);
+  console.log('Created image directory and index.html');
   
   console.log('Build completed successfully');
 
