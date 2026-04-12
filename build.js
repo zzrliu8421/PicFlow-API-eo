@@ -313,6 +313,42 @@ GET /image
   fs.writeFileSync(indexHtmlPath, indexHtmlContent);
   console.log('Created index.html');
   
+  // 扫描图片文件函数
+  function scanImageFiles() {
+    const convertedDir = path.join(process.cwd(), 'converted');
+    const pcImages = [];
+    const peImages = [];
+    
+    // 扫描PC图片
+    const pcWebpDir = path.join(convertedDir, 'pc', 'webp');
+    if (fs.existsSync(pcWebpDir)) {
+      const files = fs.readdirSync(pcWebpDir);
+      files.forEach(file => {
+        if (file.endsWith('.webp')) {
+          const filename = file.replace('.webp', '');
+          pcImages.push(filename);
+        }
+      });
+    }
+    
+    // 扫描移动设备图片
+    const peWebpDir = path.join(convertedDir, 'pe', 'webp');
+    if (fs.existsSync(peWebpDir)) {
+      const files = fs.readdirSync(peWebpDir);
+      files.forEach(file => {
+        if (file.endsWith('.webp')) {
+          const filename = file.replace('.webp', '');
+          peImages.push(filename);
+        }
+      });
+    }
+    
+    return { pcImages, peImages };
+  }
+  
+  // 扫描图片文件
+  const { pcImages, peImages } = scanImageFiles();
+  
   // 创建API目录
   const apiDir = path.join(process.cwd(), 'dist', 'api');
   fs.mkdirSync(apiDir, { recursive: true });
@@ -358,12 +394,19 @@ GET /image
     function getRandomImage(type, format) {
       const baseUrl = window.location.origin;
       
-      // 随机生成图片编号
-      const maxImages = type === 'pc' ? 3 : 6;
-      const randomNum = Math.floor(Math.random() * maxImages) + 1;
+      // 图片文件列表
+      const pcImages = ${JSON.stringify(pcImages)};
+      const peImages = ${JSON.stringify(peImages)};
+      
+      // 根据设备类型选择图片列表
+      const imageList = type === 'pc' ? pcImages : peImages;
+      
+      // 随机选择图片
+      const randomIndex = Math.floor(Math.random() * imageList.length);
+      const randomImage = imageList[randomIndex];
       
       return {
-        url: baseUrl + '/converted/' + type + '/' + format + '/' + randomNum + '.' + format,
+        url: baseUrl + '/converted/' + type + '/' + format + '/' + randomImage + '.' + format,
         format: format,
         type: type
       };
@@ -456,11 +499,18 @@ GET /image
       const type = detectDeviceType();
       const format = detectImageFormat();
       
-      // 随机生成图片编号
-      const maxImages = type === 'pc' ? 3 : 6;
-      const randomNum = Math.floor(Math.random() * maxImages) + 1;
+      // 图片文件列表
+      const pcImages = ${JSON.stringify(pcImages)};
+      const peImages = ${JSON.stringify(peImages)};
       
-      return baseUrl + '/converted/' + type + '/' + format + '/' + randomNum + '.' + format;
+      // 根据设备类型选择图片列表
+      const imageList = type === 'pc' ? pcImages : peImages;
+      
+      // 随机选择图片
+      const randomIndex = Math.floor(Math.random() * imageList.length);
+      const randomImage = imageList[randomIndex];
+      
+      return baseUrl + '/converted/' + type + '/' + format + '/' + randomImage + '.' + format;
     }
     
     // 重定向到随机图片
