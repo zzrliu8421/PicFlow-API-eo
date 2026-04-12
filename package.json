@@ -6,7 +6,7 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "wrangler dev src/index.ts",
-    "build": "wrangler deploy --dry-run --outdir=dist",
+    "build": "node build.js",
     "deploy": "wrangler deploy"
   },
   "keywords": [
