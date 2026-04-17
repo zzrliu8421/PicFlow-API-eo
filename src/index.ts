@@ -9,7 +9,8 @@ const app = new Hono();
 app.use('*', cors({
   origin: '*',
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowHeaders: ['Content-Type', 'Authorization']
+  allowHeaders: ['Content-Type', 'Authorization'],
+  credentials: false
 }));
 
 
@@ -80,12 +81,28 @@ function getBasicSystemInfo(userAgent: string, clientIP: string): any {
   };
 }
 
-// 静态文件服务
-app.use('/converted/*', serveStatic({
+// 静态文件服务（带CORS支持）
+app.use('/converted/*', async (c, next) => {
+  c.header('Access-Control-Allow-Origin', '*');
+  c.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  c.header('Access-Control-Allow-Headers', 'Content-Type');
+  if (c.req.method === 'OPTIONS') {
+    return c.text('', 204);
+  }
+  await next();
+}, serveStatic({
   root: BASE_DIR
 }));
 
-app.use('/images/*', serveStatic({
+app.use('/images/*', async (c, next) => {
+  c.header('Access-Control-Allow-Origin', '*');
+  c.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  c.header('Access-Control-Allow-Headers', 'Content-Type');
+  if (c.req.method === 'OPTIONS') {
+    return c.text('', 204);
+  }
+  await next();
+}, serveStatic({
   root: BASE_DIR
 }));
 
