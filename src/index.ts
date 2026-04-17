@@ -1,8 +1,17 @@
 import { Hono } from 'hono';
 import { serveStatic } from 'hono/serve-static';
+import { cors } from 'hono/cors';
 import { join } from 'node:path';
 
 const app = new Hono();
+
+// 添加CORS支持
+app.use('*', cors({
+  origin: '*',
+  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowHeaders: ['Content-Type', 'Authorization']
+}));
+
 
 // 配置常量
 const BASE_DIR = process.cwd();
