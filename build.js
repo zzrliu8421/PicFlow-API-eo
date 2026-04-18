@@ -433,7 +433,7 @@ function build() {
         <div class="parameter">
           <div class="parameter-name">return</div>
           <div class="parameter-type">可选，字符串</div>
-          <div class="parameter-description">返回类型，可选值：redirect（重定向到图片）、json（返回JSON响应），默认json</div>
+          <div class="parameter-description">返回类型，可选值：redirect（重定向到图片）、json（返回JSON响应）、text（纯文本链接），默认json</div>
         </div>
         
         <h4>响应格式</h4>
@@ -486,7 +486,9 @@ GET /api?format=webp&count=3
 GET /image
 
 # 在HTML中使用
-<img 
+&lt;img src="https://your-domain.com/image" /&gt;
+        </div>
+      </div>
       
       <h3>错误码</h3>
       <div class="error-code">
@@ -502,17 +504,17 @@ GET /image
       <p>API 会自动检测以下信息：</p>
       <ul>
         <li><strong>设备类型</strong>：根据用户代理字符串检测是电脑还是移动设备</li>
-        <li><strong>图片格式</strong>：根据浏览器支持检测最佳图片格式</li>
+        <li><strong>图片格式</strong>：根据浏览器支持检测最佳图片格式（WebP）</li>
       </ul>
-      <p>这意味着您可以直接访问 <code>/api</code> 而不需要指定任何参数，API 会自动为您选择最合适的配置。</p>
+      <p>这意味着您可以直接访问 <code>/api</code> 或 <code>/image</code> 而不需要指定任何参数，API 会自动为您选择最合适的配置。</p>
     </div>
-    
-    <div class="footer" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; text-align: center; color: #888; font-size: 14px;">
-      <p>© 2026-<script>document.write(new Date().getFullYear())</script> <a href="https://www.sylv.top" target="_blank" style="color: #888; text-decoration: none;">Sylvy</a>. All rights reserved.</p>
-      <p>
-        <a href="https://beian.miit.gov.cn/" target="_blank" style="color: #888; text-decoration: none;">豫ICP备2026013756号-1</a>
-      </p>
-    </div>
+  </div>
+  
+  <div class="footer" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; text-align: center; color: #888; font-size: 14px;">
+    <p>&copy; 2026 <a href="https://www.sylv.top" target="_blank" style="color: #888; text-decoration: none;">Sylvy</a>. All rights reserved.</p>
+    <p>
+      <a href="https://beian.miit.gov.cn/" target="_blank" style="color: #888; text-decoration: none;">豫ICP备2026013756号-1</a>
+    </p>
   </div>
 </body>
 </html>
