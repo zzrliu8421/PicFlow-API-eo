@@ -32,5 +32,19 @@
       "source": "/converted/*",
       "cacheTtl": 86400
     }
+  ],
+  "functions": [
+    {
+      "functionName": "api",
+      "functionPath": "edge-functions/api.js",
+      "routes": [
+        {
+          "path": "/api"
+        },
+        {
+          "path": "/image"
+        }
+      ]
+    }
   ]
 }
