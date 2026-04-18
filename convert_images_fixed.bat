@@ -27,12 +27,8 @@ REM Create output directories
 if not exist "converted" mkdir "converted"
 if not exist "converted\pc" mkdir "converted\pc"
 if not exist "converted\pe" mkdir "converted\pe"
-if not exist "converted\pc\avif" mkdir "converted\pc\avif"
 if not exist "converted\pc\webp" mkdir "converted\pc\webp"
-if not exist "converted\pc\jpeg" mkdir "converted\pc\jpeg"
-if not exist "converted\pe\avif" mkdir "converted\pe\avif"
 if not exist "converted\pe\webp" mkdir "converted\pe\webp"
-if not exist "converted\pe\jpeg" mkdir "converted\pe\jpeg"
 
 set /a total_converted=0
 set /a total_errors=0
@@ -44,16 +40,6 @@ if exist "images\pc" (
         if exist "%%f" (
             echo   Converting: %%~nxf
             
-            REM Convert to AVIF
-            magick "%%f" -quality 85 "converted\pc\avif\%%~nf.avif" >nul 2>&1
-            if !errorlevel! equ 0 (
-                echo     AVIF completed
-                set /a total_converted+=1
-            ) else (
-                echo     AVIF failed
-                set /a total_errors+=1
-            )
-            
             REM Convert to WebP
             magick "%%f" -quality 85 "converted\pc\webp\%%~nf.webp" >nul 2>&1
             if !errorlevel! equ 0 (
@@ -61,16 +47,6 @@ if exist "images\pc" (
                 set /a total_converted+=1
             ) else (
                 echo     WebP failed
-                set /a total_errors+=1
-            )
-            
-            REM Convert to JPEG
-            magick "%%f" -quality 90 -strip "converted\pc\jpeg\%%~nf.jpg" >nul 2>&1
-            if !errorlevel! equ 0 (
-                echo     JPEG completed
-                set /a total_converted+=1
-            ) else (
-                echo     JPEG failed
                 set /a total_errors+=1
             )
         )
@@ -88,16 +64,6 @@ if exist "images\pe" (
         if exist "%%f" (
             echo   Converting: %%~nxf
             
-            REM Convert to AVIF
-            magick "%%f" -quality 85 "converted\pe\avif\%%~nf.avif" >nul 2>&1
-            if !errorlevel! equ 0 (
-                echo     AVIF completed
-                set /a total_converted+=1
-            ) else (
-                echo     AVIF failed
-                set /a total_errors+=1
-            )
-            
             REM Convert to WebP
             magick "%%f" -quality 85 "converted\pe\webp\%%~nf.webp" >nul 2>&1
             if !errorlevel! equ 0 (
@@ -105,16 +71,6 @@ if exist "images\pe" (
                 set /a total_converted+=1
             ) else (
                 echo     WebP failed
-                set /a total_errors+=1
-            )
-            
-            REM Convert to JPEG
-            magick "%%f" -quality 90 -strip "converted\pe\jpeg\%%~nf.jpg" >nul 2>&1
-            if !errorlevel! equ 0 (
-                echo     JPEG completed
-                set /a total_converted+=1
-            ) else (
-                echo     JPEG failed
                 set /a total_errors+=1
             )
         )

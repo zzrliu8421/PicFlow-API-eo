@@ -25,6 +25,142 @@ function copyDirectory(source, target) {
   }
 }
 
+// 生成API边缘函数
+function generateApiFunction(imageFileList) {
+  const imageListJson = JSON.stringify(imageFileList);
+  
+  return `// 边缘函数 - API处理
+
+// 图片文件列表（构建时嵌入）
+const IMAGE_LIST = ${imageListJson};
+
+// 检测设备类型
+function detectDeviceType(userAgent) {
+  const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+  return mobileRegex.test(userAgent) ? 'pe' : 'pc';
+}
+
+// 检测浏览器支持的图片格式
+function detectImageFormat(acceptHeader) {
+  return 'webp';
+}
+
+// 主处理函数
+export default function onRequest(context) {
+  const request = context.request;
+  const url = new URL(request.url);
+  const userAgent = request.headers.get('User-Agent') || '';
+  const acceptHeader = request.headers.get('Accept') || '';
+  
+  const params = new URLSearchParams(url.search);
+  const count = Math.max(1, Math.min(50, parseInt(params.get('count') || '1')));
+  const returnType = params.get('return') || 'json';
+  const type = params.get('type') || detectDeviceType(userAgent);
+  const format = params.get('format') || detectImageFormat(acceptHeader);
+  
+  // 获取图片列表
+  const files = IMAGE_LIST[type]?.[format];
+  if (!files || files.length === 0) {
+    return new Response(JSON.stringify({
+      success: false,
+      message: 'No images found'
+    }), {
+      status: 404,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+  
+  const fileCount = files.length;
+  
+  // 处理重定向
+  if (returnType === 'redirect') {
+    const randomImage = files[Math.floor(Math.random() * fileCount)];
+    const imageUrl = \`\${url.origin}/converted/\${type}/\${format}/\${randomImage}.\${format}\`;
+    
+    return new Response(null, {
+      status: 302,
+      headers: { 'Location': imageUrl }
+    });
+  }
+  
+  // 生成图片URL列表
+  const images = [];
+  for (let i = 0; i < count; i++) {
+    const randomImage = files[Math.floor(Math.random() * fileCount)];
+    images.push({
+      url: \`\${url.origin}/converted/\${type}/\${format}/\${randomImage}.\${format}\`,
+      format,
+      type
+    });
+  }
+  
+  // 处理文本返回类型
+  if (returnType === 'text') {
+    return new Response(images.map(img => img.url).join('\\n'), {
+      headers: { 'Content-Type': 'text/plain' }
+    });
+  }
+  
+  // 返回JSON响应
+  return new Response(JSON.stringify({
+    success: true,
+    count: images.length,
+    type,
+    format,
+    images
+  }), {
+    headers: { 'Content-Type': 'application/json' }
+  });
+}
+`;
+}
+
+// 生成Image边缘函数
+function generateImageFunction(imageFileList) {
+  const imageListJson = JSON.stringify(imageFileList);
+  
+  return `// 边缘函数 - Image处理
+
+// 图片文件列表（构建时嵌入）
+const IMAGE_LIST = ${imageListJson};
+
+// 检测设备类型
+function detectDeviceType(userAgent) {
+  const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+  return mobileRegex.test(userAgent) ? 'pe' : 'pc';
+}
+
+// 检测浏览器支持的图片格式
+function detectImageFormat(acceptHeader) {
+  return 'webp';
+}
+
+// 主处理函数
+export default function onRequest(context) {
+  const request = context.request;
+  const url = new URL(request.url);
+  const userAgent = request.headers.get('User-Agent') || '';
+  const acceptHeader = request.headers.get('Accept') || '';
+  
+  const type = detectDeviceType(userAgent);
+  const format = detectImageFormat(acceptHeader);
+  
+  const files = IMAGE_LIST[type]?.[format];
+  if (!files || files.length === 0) {
+    return new Response('No images found', { status: 404 });
+  }
+  
+  const randomImage = files[Math.floor(Math.random() * files.length)];
+  const imageUrl = \`\${url.origin}/converted/\${type}/\${format}/\${randomImage}.\${format}\`;
+  
+  return new Response(null, {
+    status: 302,
+    headers: { 'Location': imageUrl }
+  });
+}
+`;
+}
+
 // 构建函数
 function build() {
   cleanDist();
@@ -43,6 +179,72 @@ function build() {
   if (fs.existsSync(imagesSource)) {
     copyDirectory(imagesSource, imagesTarget);
     console.log('Copied images directory');
+  }
+  
+  // 生成图片文件列表
+  console.log('Generating image file list...');
+  const imageFileList = {
+    pc: {
+      webp: []
+    },
+    pe: {
+      webp: []
+    }
+  };
+
+  // 扫描PC目录
+  const pcWebpDir = path.join(convertedSource, 'pc', 'webp');
+  const peWebpDir = path.join(convertedSource, 'pe', 'webp');
+
+  // 处理PC目录
+  if (fs.existsSync(pcWebpDir)) {
+    try {
+      const pcWebpFiles = fs.readdirSync(pcWebpDir);
+      imageFileList.pc.webp = pcWebpFiles.map(file => path.basename(file, '.webp'));
+      console.log(`Processed ${imageFileList.pc.webp.length} PC images`);
+    } catch (error) {
+      console.error('Error processing PC images:', error);
+    }
+  }
+
+  // 处理PE目录
+  if (fs.existsSync(peWebpDir)) {
+    try {
+      const peWebpFiles = fs.readdirSync(peWebpDir);
+      imageFileList.pe.webp = peWebpFiles.map(file => path.basename(file, '.webp'));
+      console.log(`Processed ${imageFileList.pe.webp.length} PE images`);
+    } catch (error) {
+      console.error('Error processing PE images:', error);
+    }
+  }
+
+  // 保存图片文件列表到JSON文件
+  try {
+    const imageListPath = path.join(process.cwd(), 'dist', 'image-list.json');
+    fs.writeFileSync(imageListPath, JSON.stringify(imageFileList, null, 2));
+    console.log('Generated image-list.json');
+  } catch (error) {
+    console.error('Error saving image-list.json:', error);
+  }
+  
+  // 生成API边缘函数（包含图片列表）
+  try {
+    const apiFunctionPath = path.join(process.cwd(), 'edge-functions', 'api', 'index.js');
+    const apiFunctionContent = generateApiFunction(imageFileList);
+    fs.writeFileSync(apiFunctionPath, apiFunctionContent);
+    console.log('Generated API edge function');
+  } catch (error) {
+    console.error('Error generating API edge function:', error);
+  }
+  
+  // 生成Image边缘函数（包含图片列表）
+  try {
+    const imageFunctionPath = path.join(process.cwd(), 'edge-functions', 'image', 'index.js');
+    const imageFunctionContent = generateImageFunction(imageFileList);
+    fs.writeFileSync(imageFunctionPath, imageFunctionContent);
+    console.log('Generated Image edge function');
+  } catch (error) {
+    console.error('Error generating Image edge function:', error);
   }
   
   // 创建package.json文件
@@ -189,7 +391,7 @@ function build() {
     
     <div class="info-item">
       <span class="label">图片格式</span>
-      <span class="value">WebP, JPEG</span>
+      <span class="value">WebP</span>
     </div>
     
     <div class="info-item">
@@ -198,7 +400,7 @@ function build() {
     </div>
     
     <div class="api-link">
-      <a href="/api?count=10">测试API接口</a>
+      <a href="/image">测试API接口</a>
     </div>
     
     <div class="documentation">
@@ -226,7 +428,7 @@ function build() {
         <div class="parameter">
           <div class="parameter-name">format</div>
           <div class="parameter-type">可选，字符串</div>
-          <div class="parameter-description">图片格式，可选值：webp、jpeg，默认自动检测</div>
+          <div class="parameter-description">图片格式，可选值：webp，默认webp</div>
         </div>
         <div class="parameter">
           <div class="parameter-name">return</div>
@@ -264,7 +466,7 @@ GET /api?type=pe&count=5
 GET /api?count=1&return=redirect
 
 # 指定图片格式
-GET /api?format=jpeg&count=3
+GET /api?format=webp&count=3
         </div>
       </div>
       
@@ -284,9 +486,7 @@ GET /api?format=jpeg&count=3
 GET /image
 
 # 在HTML中使用
-<img src="/image" alt="Random image">
-        </div>
-      </div>
+<img 
       
       <h3>错误码</h3>
       <div class="error-code">
@@ -306,6 +506,13 @@ GET /image
       </ul>
       <p>这意味着您可以直接访问 <code>/api</code> 而不需要指定任何参数，API 会自动为您选择最合适的配置。</p>
     </div>
+    
+    <div class="footer" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; text-align: center; color: #888; font-size: 14px;">
+      <p>© 2026-<script>document.write(new Date().getFullYear())</script> <a href="https://www.sylv.top" target="_blank" style="color: #888; text-decoration: none;">Sylvy</a>. All rights reserved.</p>
+      <p>
+        <a href="https://beian.miit.gov.cn/" target="_blank" style="color: #888; text-decoration: none;">豫ICP备2026013756号-1</a>
+      </p>
+    </div>
   </div>
 </body>
 </html>
@@ -314,9 +521,7 @@ GET /image
   console.log('Created index.html');
   
   // 构建完成，不需要创建API和image目录，使用边缘函数处理这些路径
-  
-  console.log('Build completed successfully');
-
+  console.log('Build completed successfully!');
 }
 
 // 执行构建

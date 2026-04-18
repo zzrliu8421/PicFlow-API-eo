@@ -1,162 +1,213 @@
 # PicFlow API
 
-🎮 **专业的随机图片处理服务** - 高效、简洁、智能的随机图片API
+基于边缘计算的随机图片API服务，部署在EdgeOne Pages平台。
 
-## 📋 项目简介
+## 项目简介
 
-PicFlow API 是一个轻量级的随机图片服务，专为智能设计，支持多种现代图片格式转换，包括 WebP、AVIF、JPEG 等格式。项目采用 PHP 开发，部署简单，性能优异。
+PicFlow API 是一个轻量级的随机图片服务，利用EdgeOne Pages的边缘函数实现，支持WebP图片格式，自动适配PC端和移动端设备。
 
-## ✨ 项目特性
+## 项目特性
 
-### 🚀 核心功能
-- **多格式支持**: 支持 WebP、AVIF、JPEG、PNG 等主流图片格式,支持不判断同设备兼容性提供不同格式的图片
-- **双端适配**: 分别支持 PC 端和 PE 端图片处理,支持设备判断提供不同分辨率图片
-- **批量转换**: 支持批量图片格式转换
-- **实时监控**: 提供系统信息面板，实时监控服务状态
+### 核心功能
+- **WebP格式**: 采用现代WebP图片格式，体积小、质量高
+- **设备适配**: 自动检测客户端设备类型，返回PC端或移动端图片
+- **随机返回**: 从图片池中随机选择图片，保证多样性
+- **多返回格式**: 支持JSON响应、图片重定向、纯文本链接
 
-### 🎯 技术特点
-- **轻量级**: 基于 PHP 开发，资源占用少
-- **高性能**: 优化的图片处理算法
-- **易部署**: 支持多种部署方式
-- **跨平台**: 支持 Windows、Linux、macOS
+### 技术优势
+- **边缘计算**: 基于EdgeOne Pages边缘函数，全球节点就近响应
+- **零延迟缓存**: 图片列表构建时嵌入，运行时零额外请求
+- **轻量架构**: 无需后端服务器，纯静态资源+边缘函数
+- **简单部署**: 推送到Git仓库即可自动构建部署
 
-### 📊 系统监控
-- PHP 版本信息
-- 服务器状态监控
-- 内存使用情况
-- 客户端访问信息
-- JSON API 支持
-
-## 🛠️ 部署指南
-
-### 环境要求
-
-- **PHP**: 7.4 或更高版本
-- **Web服务器**: Apache、Nginx 或 IIS
-- **系统**: Windows/Linux/macOS
-
-### 快速部署
-
-#### 方法一：Apache/Nginx 部署
-
-1. **下载项目**
-   ```bash
-   git clone https://github.com/matsuzaka-yuki/PicFlow-API.git
-   cd picflow-api
-   ```
-
-2. **配置Web服务器**
-
-   **宝塔面板/1Panel**:  
-   安装好PHP74+环境,进入面板添加站点,选择PHP74+环境,上传项目到网站根目录,配置完成后访问你的域名即可
-      
-   **Apache 配置** (`.htaccess`):
-   ```apache
-   RewriteEngine On
-   RewriteCond %{REQUEST_FILENAME} !-f
-   RewriteCond %{REQUEST_FILENAME} !-d
-   RewriteRule ^(.*)$ index.php [QSA,L]
-   ```
-
-   **Nginx 配置**:
-   ```nginx
-   server {
-       listen 80;
-       server_name your-domain.com;
-       root /path/to/picflow-api;
-       index index.php;
-
-       location / {
-           try_files $uri $uri/ /index.php?$query_string;
-       }
-
-       location ~ \.php$ {
-           fastcgi_pass 127.0.0.1:9000;
-           fastcgi_index index.php;
-           fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-           include fastcgi_params;
-       }
-   }
-   ```
-
-3. **设置目录权限**
-   ```bash
-   chmod 755 images/ converted/
-   chmod -R 777 converted/
-   ```
-
-4. **放置图片**
-   你需要在 `converted/` 目录下放置不同设备和不同类型的格式图片，然后访问服务即可。如果你没有这类格式图片,请使用市面上的格式转换工具进行转换。
-   你也可以在 `images/` 目录下放置原始图片，然后运行 `convert_images.bat` 进行转换。(Windows),如果不会使用请看[README_CONVERT.md](README_CONVERT.md)
-
-5. **访问服务**
-   ```
-   http://your-domain.com/
-   ```
-
-#### 方法二：PHP 内置服务器（开发环境）
-
-```bash
-# 进入项目目录
-cd picflow-api
-
-# 启动内置服务器
-php -S localhost:8000
-
-# 访问服务
-# http://localhost:8000
-```
-
-
-
-
-### 目录结构
+## 项目结构
 
 ```
 picflow-api/
-├── index.php              # 主入口文件
-├── README.md              # 项目说明文档
-├── images/                # 原始图片目录
-│   ├── pc/               # PC端图片
-│   └── pe/               # PE端图片
-├── converted/             # 转换后图片目录
-│   ├── pc/               # PC端转换图片
-│   │   ├── webp/         # WebP格式
-│   │   ├── avif/         # AVIF格式
-│   │   └── jpeg/         # JPEG格式
-│   └── pe/               # PE端转换图片
-│       ├── webp/         # WebP格式
-│       ├── avif/         # AVIF格式
-│       └── jpeg/         # JPEG格式
-└── .htaccess             # Apache重写规则
+├── build.js                    # 构建脚本
+├── package.json                # 项目配置
+├── edgeone.json                # EdgeOne Pages配置
+├── convert_images_fixed.bat    # 图片转换脚本(Windows)
+├── README.md                   # 项目文档
+├── DEPLOY.md                   # 部署文档
+├── .gitignore                  # Git忽略配置
+├── images/                     # 原始图片目录
+│   ├── pc/                     # PC端原始图片
+│   └── pe/                     # 移动端原始图片
+├── converted/                  # 转换后图片目录
+│   ├── pc/webp/                # PC端WebP图片
+│   └── pe/webp/                # 移动端WebP图片
+└── edge-functions/             # 边缘函数目录
+    ├── api/index.js            # /api 接口处理
+    └── image/index.js          # /image 接口处理
 ```
 
-## 📖 使用说明
+## 快速开始
 
-### API 接口
+### 1. 准备图片
 
-[API 文档](API.md)
+将图片放入以下目录：
 
+```
+images/
+├── pc/    # 电脑端图片
+└── pe/    # 移动端图片
+```
 
-## 🤝 贡献指南
+### 2. 图片格式转换
 
-欢迎提交 Issue 和 Pull Request！
+使用ImageMagick将图片转换为WebP格式：
 
+```bash
+# Windows系统运行
+convert_images_fixed.bat
 
-## 📄 许可证
+# 或手动转换
+magick input.jpg -quality 85 output.webp
+```
 
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情
+### 3. 部署到EdgeOne Pages
 
-## 📞 联系方式
+1. 推送代码到Git仓库
+2. 在EdgeOne Pages创建站点并关联仓库
+3. 设置构建配置：
+   - 构建命令：`npm run build`
+   - 输出目录：`dist`
+   - Node版本：`18.20.4`
+4. 触发构建，等待部署完成
 
-- **项目主页**: https://github.com/matsuzaka-yuki/PicFlow-API
-- **邮箱**: 3231515355@qq.com
+详细部署步骤请参考 DEPLOY.md
 
-## 🙏 致谢
+## API 文档
 
-感谢所有为这个项目做出贡献的开发者！
+### 接口列表
 
----
+| 接口 | 描述 | 方法 |
+|------|------|------|
+| `/api` | 获取随机图片（JSON/重定向/文本） | GET |
+| `/image` | 直接重定向到随机图片 | GET |
 
+### GET /api
 
-**PicFlow API** - 让随机图片处理更简单 🚀
+获取随机图片，支持多种返回格式。
+
+#### 请求参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+|------|------|------|--------|------|
+| `count` | 整数 | 否 | 1 | 返回图片数量，范围1-50 |
+| `type` | 字符串 | 否 | 自动检测 | 设备类型：`pc` 或 `pe` |
+| `format` | 字符串 | 否 | webp | 图片格式，当前仅支持 `webp` |
+| `return` | 字符串 | 否 | json | 返回类型：`json`、`redirect`、`text` |
+
+#### 返回类型
+
+**JSON响应 (return=json)**
+
+```json
+{
+  "success": true,
+  "count": 2,
+  "type": "pc",
+  "format": "webp",
+  "images": [
+    {
+      "url": "https://example.com/converted/pc/webp/xxx.webp",
+      "format": "webp",
+      "type": "pc"
+    },
+    {
+      "url": "https://example.com/converted/pc/webp/yyy.webp",
+      "format": "webp",
+      "type": "pc"
+    }
+  ]
+}
+```
+
+**重定向 (return=redirect)**
+
+直接302重定向到图片URL，适用于`count=1`。
+
+**纯文本 (return=text)**
+
+每行一个图片URL，适用于批量获取链接。
+
+```
+https://example.com/converted/pc/webp/xxx.webp
+https://example.com/converted/pc/webp/yyy.webp
+```
+
+### GET /image
+
+直接重定向到一张随机图片，无需参数。
+
+## 使用示例
+
+```bash
+# 获取1张随机图片（JSON）
+GET /api
+
+# 获取10张随机图片
+GET /api?count=10
+
+# 获取移动端图片
+GET /api?type=pe
+
+# 获取5张移动端图片
+GET /api?type=pe&count=5
+
+# 直接重定向到图片
+GET /api?count=1&return=redirect
+
+# 获取纯文本链接
+GET /api?count=10&return=text
+
+# 直接获取随机图片（重定向）
+GET /image
+```
+
+## 设备检测
+
+API会自动检测客户端设备类型：
+
+- 检测到移动设备（Android、iOS等）时返回 `pe` 类型图片
+- 其他情况返回 `pc` 类型图片
+
+也可通过 `type` 参数手动指定。
+
+## 构建说明
+
+运行构建命令：
+
+```bash
+npm run build
+```
+
+构建过程会：
+1. 清理 `dist` 目录
+2. 复制图片文件到 `dist/converted/`
+3. 扫描图片文件列表并嵌入到边缘函数代码
+4. 生成包含API文档的首页
+
+## 技术栈
+
+- **运行时**: EdgeOne Pages 边缘函数
+- **构建工具**: Node.js
+- **图片格式**: WebP
+- **部署平台**: 腾讯云 EdgeOne Pages
+
+## 环境要求
+
+- Node.js 18.x 或更高版本
+- ImageMagick（用于图片转换，可选）
+- Git仓库（用于部署）
+
+## 许可证
+
+MIT License
+
+## 联系方式
+
+- 项目主页: https://github.com/matsuzaka-yuki/PicFlow-API
+- 邮箱: 3231515355@qq.com
