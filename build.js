@@ -261,6 +261,7 @@ function build() {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PicFlow API</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>️</text></svg>">
   <style>
     :root {
       --bg-primary: #0d1117;
@@ -561,6 +562,82 @@ function build() {
       cursor: not-allowed;
     }
     
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      margin: 30px auto 0;
+    }
+    
+    .pagination button {
+      padding: 10px 24px;
+      background: var(--bg-secondary);
+      color: var(--accent);
+      border: 2px solid var(--border);
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    
+    .pagination button:hover:not(:disabled) {
+      background: var(--bg-hover);
+      border-color: var(--accent);
+    }
+    
+    .pagination button:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+    
+    .pagination .page-info {
+      color: var(--text-secondary);
+      font-size: 0.9em;
+    }
+    
+    .image-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 1000;
+      cursor: pointer;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .image-modal.active {
+      display: flex;
+    }
+    
+    .image-modal img {
+      max-width: 90%;
+      max-height: 90vh;
+      object-fit: contain;
+      border-radius: 8px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    }
+    
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      font-size: 40px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      user-select: none;
+    }
+    
+    .modal-close:hover {
+      color: var(--accent);
+      transform: rotate(90deg);
+    }
+    
     /* 文档样式 */
     .doc-section {
       margin-top: 30px;
@@ -619,10 +696,18 @@ function build() {
     }
     
     .response {
-      background: #edf2f7;
+      background: var(--bg-card);
       padding: 15px;
       border-radius: 10px;
       margin: 15px 0;
+      border: 1px solid var(--border);
+    }
+    
+    .response pre {
+      color: var(--text-primary);
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 0.9em;
+      overflow-x: auto;
     }
     
     .error-code {
