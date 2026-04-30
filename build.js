@@ -1024,34 +1024,26 @@ background-image: url('https://your-domain.com/image');</div>
       
       count.textContent = '共 ' + images.length + ' 张图片';
       
-      // 计算分页
       const totalPages = Math.ceil(images.length / imagesPerPage);
       const startIndex = (currentPage - 1) * imagesPerPage;
       const endIndex = Math.min(startIndex + imagesPerPage, images.length);
       const pageImages = images.slice(startIndex, endIndex);
       
-      // 渲染当前页的图片
-      var htmlParts = [];
-      for (var i = 0; i < pageImages.length; i++) {
-        var imageName = pageImages[i];
-        var imageUrl = '/converted/' + type + '/webp/' + imageName + '.webp';
-        htmlParts.push('<div class="gallery-item" data-image="' + imageUrl + '" onclick="openModal(this.dataset.image)">');
-        htmlParts.push('<img src="' + imageUrl + '" loading="lazy" alt="' + imageName + '" />');
-        htmlParts.push('</div>');
-      }
-      grid.innerHTML = htmlParts.join('');
+      grid.innerHTML = pageImages.map(name => 
+        '<div class="gallery-item" onclick="openModal(this)">' +
+          '<img src="/converted/' + type + '/webp/' + name + '.webp" loading="lazy" alt="' + name + '" />' +
+        '</div>'
+      ).join('');
       
-      // 更新分页控件
       document.getElementById('pageInfo').textContent = currentPage + ' / ' + totalPages;
-      document.getElementById('prevBtn').disabled = currentPage === 1;
-      document.getElementById('nextBtn').disabled = currentPage === totalPages;
+      document.getElementById('prevBtn').disabled = currentPage <= 1;
+      document.getElementById('nextBtn').disabled = currentPage >= totalPages;
     }
     
     function prevPage() {
       if (currentPage > 1) {
         currentPage--;
         renderGallery(currentType);
-        document.getElementById('galleryGrid').scrollIntoView({ behavior: 'smooth' });
       }
     }
     
@@ -1061,14 +1053,14 @@ background-image: url('https://your-domain.com/image');</div>
       if (currentPage < totalPages) {
         currentPage++;
         renderGallery(currentType);
-        document.getElementById('galleryGrid').scrollIntoView({ behavior: 'smooth' });
       }
     }
     
-    function openModal(imgSrc) {
+    function openModal(element) {
+      const img = element.querySelector('img');
       const modal = document.getElementById('imageModal');
       const modalImg = document.getElementById('modalImage');
-      modalImg.src = imgSrc;
+      modalImg.src = img.src;
       modal.classList.add('active');
       document.body.style.overflow = 'hidden';
     }
@@ -1079,7 +1071,6 @@ background-image: url('https://your-domain.com/image');</div>
       document.body.style.overflow = '';
     }
     
-    // ESC键关闭模态框
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape') {
         closeModal();
