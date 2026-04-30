@@ -1031,11 +1031,15 @@ background-image: url('https://your-domain.com/image');</div>
       const pageImages = images.slice(startIndex, endIndex);
       
       // 渲染当前页的图片
-      grid.innerHTML = pageImages.map(name => 
-        '<div class="gallery-item" data-image="/converted/' + type + '/webp/' + name + '.webp" onclick="openModal(this.dataset.image)">' +
-          '<img src="/converted/' + type + '/webp/' + name + '.webp" loading="lazy" alt="' + name + '" />' +
-        '</div>'
-      ).join('');
+      var htmlParts = [];
+      for (var i = 0; i < pageImages.length; i++) {
+        var imageName = pageImages[i];
+        var imageUrl = '/converted/' + type + '/webp/' + imageName + '.webp';
+        htmlParts.push('<div class="gallery-item" data-image="' + imageUrl + '" onclick="openModal(this.dataset.image)">');
+        htmlParts.push('<img src="' + imageUrl + '" loading="lazy" alt="' + imageName + '" />');
+        htmlParts.push('</div>');
+      }
+      grid.innerHTML = htmlParts.join('');
       
       // 更新分页控件
       document.getElementById('pageInfo').textContent = currentPage + ' / ' + totalPages;
