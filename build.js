@@ -651,9 +651,9 @@ function build() {
     </div>
     
     <div class="nav">
-      <a href="javascript:void(0)" class="active" onclick="showPage('home')">首页</a>
-      <a href="javascript:void(0)" onclick="showPage('gallery')">图库</a>
-      <a href="javascript:void(0)" onclick="showPage('docs')">文档</a>
+      <a href="#" class="active" onclick="showPage('home', this); return false;">首页</a>
+      <a href="#" onclick="showPage('gallery', this); return false;">图库</a>
+      <a href="#" onclick="showPage('docs', this); return false;">文档</a>
     </div>
     
     <!-- 首页 -->
@@ -833,11 +833,11 @@ background-image: url('https://your-domain.com/image');</div>
   
   <script>
     // 页面切换
-    function showPage(page) {
+    function showPage(page, el) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.nav a').forEach(a => a.classList.remove('active'));
       document.getElementById(page + '-page').classList.add('active');
-      event.target.classList.add('active');
+      el.classList.add('active');
       
       if (page === 'gallery') {
         loadGallery('pc');
@@ -902,10 +902,17 @@ background-image: url('https://your-domain.com/image');</div>
       count.textContent = '共 ' + images.length + ' 张图片';
       
       grid.innerHTML = images.slice(0, 50).map(name => 
-        '<div class="gallery-item" onclick="window.location.href=\'/converted/' + type + '/webp/' + name + '.webp\'">' +
+        '<div class="gallery-item" data-url="/converted/' + type + '/webp/' + name + '.webp">' +
           '<img src="/converted/' + type + '/webp/' + name + '.webp" loading="lazy" alt="' + name + '" />' +
         '</div>'
       ).join('');
+      
+      // 添加点击事件
+      grid.querySelectorAll('.gallery-item').forEach(item => {
+        item.onclick = function() {
+          window.location.href = this.dataset.url;
+        };
+      });
     }
   </script>
 </body>
