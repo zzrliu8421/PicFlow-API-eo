@@ -1032,7 +1032,7 @@ background-image: url('https://your-domain.com/image');</div>
       
       // 渲染当前页的图片
       grid.innerHTML = pageImages.map(name => 
-        '<div class="gallery-item" onclick="openModal(this.querySelector(\'img\').src)">' +
+        '<div class="gallery-item" data-image="/converted/' + type + '/webp/' + name + '.webp" onclick="openModal(this.dataset.image)">' +
           '<img src="/converted/' + type + '/webp/' + name + '.webp" loading="lazy" alt="' + name + '" />' +
         '</div>'
       ).join('');
