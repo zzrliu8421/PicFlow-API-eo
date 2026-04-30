@@ -539,29 +539,6 @@ function build() {
       object-fit: cover;
     }
     
-    .load-more-btn {
-      display: block;
-      margin: 30px auto 0;
-      padding: 12px 32px;
-      background: var(--bg-secondary);
-      color: var(--accent);
-      border: 2px solid var(--accent);
-      border-radius: 50px;
-      cursor: pointer;
-      font-weight: 500;
-      transition: all 0.3s ease;
-    }
-    
-    .load-more-btn:hover {
-      background: var(--accent);
-      color: white;
-    }
-    
-    .load-more-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-    
     .pagination {
       display: flex;
       justify-content: center;
@@ -842,9 +819,19 @@ function build() {
             <span id="imageCount" style="color: var(--text-secondary);"></span>
           </div>
           <div id="galleryGrid" class="gallery-grid"></div>
-          <button id="loadMoreBtn" class="load-more-btn" style="display:none;" onclick="loadMoreImages()">加载更多</button>
+          <div class="pagination">
+            <button id="prevBtn" onclick="prevPage()" disabled>上一页</button>
+            <span class="page-info" id="pageInfo">1 / 1</span>
+            <button id="nextBtn" onclick="nextPage()">下一页</button>
+          </div>
         </div>
       </div>
+    </div>
+    
+    <!-- 图片预览模态框 -->
+    <div id="imageModal" class="image-modal" onclick="closeModal()">
+      <span class="modal-close">&times;</span>
+      <img id="modalImage" src="" alt="图片预览" />
     </div>
     
     <!-- 文档页 -->
@@ -1005,10 +992,15 @@ background-image: url('https://your-domain.com/image');</div>
     
     // 图库相关
     let imageData = null;
+    let currentType = 'pc';
+    let currentPage = 1;
+    const imagesPerPage = 10;
     
     function switchDevice(type, btn) {
       document.querySelectorAll('.device-toggle button').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
+      currentType = type;
+      currentPage = 1;
       loadGallery(type);
     }
     
@@ -1032,19 +1024,63 @@ background-image: url('https://your-domain.com/image');</div>
       
       count.textContent = '共 ' + images.length + ' 张图片';
       
-      grid.innerHTML = images.slice(0, 50).map(name => 
-        '<div class="gallery-item" data-url="/converted/' + type + '/webp/' + name + '.webp">' +
+      // 计算分页
+      const totalPages = Math.ceil(images.length / imagesPerPage);
+      const startIndex = (currentPage - 1) * imagesPerPage;
+      const endIndex = Math.min(startIndex + imagesPerPage, images.length);
+      const pageImages = images.slice(startIndex, endIndex);
+      
+      // 渲染当前页的图片
+      grid.innerHTML = pageImages.map(name => 
+        '<div class="gallery-item" onclick="openModal(this.querySelector(\'img\').src)">' +
           '<img src="/converted/' + type + '/webp/' + name + '.webp" loading="lazy" alt="' + name + '" />' +
         '</div>'
       ).join('');
       
-      // 添加点击事件
-      grid.querySelectorAll('.gallery-item').forEach(item => {
-        item.onclick = function() {
-          window.location.href = this.dataset.url;
-        };
-      });
+      // 更新分页控件
+      document.getElementById('pageInfo').textContent = currentPage + ' / ' + totalPages;
+      document.getElementById('prevBtn').disabled = currentPage === 1;
+      document.getElementById('nextBtn').disabled = currentPage === totalPages;
     }
+    
+    function prevPage() {
+      if (currentPage > 1) {
+        currentPage--;
+        renderGallery(currentType);
+        document.getElementById('galleryGrid').scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+    
+    function nextPage() {
+      const images = imageData[currentType]?.webp || [];
+      const totalPages = Math.ceil(images.length / imagesPerPage);
+      if (currentPage < totalPages) {
+        currentPage++;
+        renderGallery(currentType);
+        document.getElementById('galleryGrid').scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+    
+    function openModal(imgSrc) {
+      const modal = document.getElementById('imageModal');
+      const modalImg = document.getElementById('modalImage');
+      modalImg.src = imgSrc;
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeModal() {
+      const modal = document.getElementById('imageModal');
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+    
+    // ESC键关闭模态框
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeModal();
+      }
+    });
   </script>
 </body>
 </html>
