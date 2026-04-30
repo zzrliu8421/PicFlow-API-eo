@@ -475,7 +475,9 @@ function build() {
       max-width: 100%;
       max-height: 400px;
       border-radius: 12px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+      display: block;
+      margin: 0 auto;
     }
     
     /* 图库样式 */
