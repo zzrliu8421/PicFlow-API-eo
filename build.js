@@ -262,6 +262,21 @@ function build() {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PicFlow API</title>
   <style>
+    :root {
+      --bg-primary: #0d1117;
+      --bg-secondary: #161b22;
+      --bg-card: #1c2333;
+      --bg-hover: #21262d;
+      --text-primary: #e6edf3;
+      --text-secondary: #8b949e;
+      --accent: #58a6ff;
+      --accent-hover: #79b8ff;
+      --accent-gradient: linear-gradient(135deg, #58a6ff 0%, #a371f7 100%);
+      --border: #30363d;
+      --success: #3fb950;
+      --danger: #f85149;
+    }
+    
     * {
       margin: 0;
       padding: 0;
@@ -270,9 +285,9 @@ function build() {
     
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: var(--bg-primary);
       min-height: 100vh;
-      color: #333;
+      color: var(--text-primary);
       line-height: 1.6;
     }
     
@@ -282,23 +297,24 @@ function build() {
       padding: 20px;
     }
     
-    /* 头部样式 */
     .header {
       text-align: center;
       padding: 40px 0 30px;
-      color: white;
     }
     
     .header h1 {
       font-size: 2.5em;
       font-weight: 700;
       margin-bottom: 10px;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
     
     .header p {
       font-size: 1.1em;
-      opacity: 0.9;
+      color: var(--text-secondary);
     }
     
     /* 导航栏 */
@@ -312,36 +328,37 @@ function build() {
     .nav a {
       display: inline-block;
       padding: 12px 30px;
-      background: rgba(255,255,255,0.2);
-      backdrop-filter: blur(10px);
-      color: white;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
       text-decoration: none;
       border-radius: 50px;
       font-weight: 500;
       transition: all 0.3s ease;
-      border: 1px solid rgba(255,255,255,0.3);
+      border: 1px solid var(--border);
     }
     
     .nav a:hover {
-      background: rgba(255,255,255,0.3);
+      background: var(--bg-hover);
       transform: translateY(-2px);
     }
     
     .nav a.active {
-      background: white;
-      color: #667eea;
+      background: var(--accent-gradient);
+      color: white;
+      border-color: transparent;
     }
     
     /* 卡片样式 */
     .card {
-      background: white;
+      background: var(--bg-card);
       border-radius: 16px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
       overflow: hidden;
+      border: 1px solid var(--border);
     }
     
     .card-header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: var(--accent-gradient);
       color: white;
       padding: 20px 30px;
     }
@@ -361,18 +378,19 @@ function build() {
       align-items: center;
       gap: 8px;
       padding: 8px 16px;
-      background: #e8f5e9;
-      color: #2e7d32;
+      background: rgba(63, 185, 80, 0.15);
+      color: var(--success);
       border-radius: 20px;
       font-weight: 500;
       font-size: 0.9em;
+      border: 1px solid rgba(63, 185, 80, 0.3);
     }
     
     .status-badge::before {
       content: '';
       width: 8px;
       height: 8px;
-      background: #4caf50;
+      background: var(--success);
       border-radius: 50%;
       animation: pulse 2s infinite;
     }
@@ -390,21 +408,21 @@ function build() {
     }
     
     .info-item {
-      background: #f8f9fa;
+      background: var(--bg-secondary);
       padding: 15px 20px;
       border-radius: 10px;
-      border-left: 4px solid #667eea;
+      border-left: 4px solid var(--accent);
     }
     
     .info-item .label {
       font-size: 0.85em;
-      color: #888;
+      color: var(--text-secondary);
       margin-bottom: 5px;
     }
     
     .info-item .value {
       font-weight: 600;
-      color: #333;
+      color: var(--text-primary);
     }
     
     /* 测试按钮 */
@@ -416,7 +434,7 @@ function build() {
     .btn {
       display: inline-block;
       padding: 14px 40px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: var(--accent-gradient);
       color: white;
       text-decoration: none;
       border-radius: 50px;
@@ -425,12 +443,12 @@ function build() {
       border: none;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      box-shadow: 0 4px 15px rgba(88, 166, 255, 0.3);
     }
     
     .btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+      box-shadow: 0 6px 20px rgba(88, 166, 255, 0.4);
     }
     
     .btn:active {
@@ -476,9 +494,9 @@ function build() {
     
     .device-toggle button {
       padding: 8px 20px;
-      border: 2px solid #667eea;
-      background: white;
-      color: #667eea;
+      border: 2px solid var(--accent);
+      background: transparent;
+      color: var(--accent);
       border-radius: 20px;
       cursor: pointer;
       font-weight: 500;
@@ -486,8 +504,12 @@ function build() {
     }
     
     .device-toggle button.active {
-      background: #667eea;
+      background: var(--accent);
       color: white;
+    }
+    
+    .device-toggle button:hover {
+      background: var(--bg-hover);
     }
     
     .gallery-grid {
@@ -507,7 +529,7 @@ function build() {
     
     .gallery-item:hover {
       transform: scale(1.05);
-      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+      box-shadow: 0 5px 20px rgba(0,0,0,0.5);
     }
     
     .gallery-item img {
@@ -516,26 +538,50 @@ function build() {
       object-fit: cover;
     }
     
+    .load-more-btn {
+      display: block;
+      margin: 30px auto 0;
+      padding: 12px 32px;
+      background: var(--bg-secondary);
+      color: var(--accent);
+      border: 2px solid var(--accent);
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    
+    .load-more-btn:hover {
+      background: var(--accent);
+      color: white;
+    }
+    
+    .load-more-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
     /* 文档样式 */
     .doc-section {
       margin-top: 30px;
     }
     
     .doc-section h3 {
-      color: #667eea;
+      color: var(--accent);
       margin: 25px 0 15px;
       font-size: 1.2em;
     }
     
     .endpoint {
-      background: #f8f9fa;
+      background: var(--bg-secondary);
       padding: 20px;
       border-radius: 12px;
       margin-bottom: 20px;
+      border: 1px solid var(--border);
     }
     
     .endpoint h4 {
-      color: #333;
+      color: var(--text-primary);
       margin-bottom: 10px;
       font-size: 1.1em;
     }
@@ -543,21 +589,21 @@ function build() {
     .parameter {
       margin: 10px 0;
       padding-left: 15px;
-      border-left: 2px solid #667eea;
+      border-left: 2px solid var(--accent);
     }
     
     .parameter-name {
       font-weight: 600;
-      color: #667eea;
+      color: var(--accent);
     }
     
     .parameter-type {
-      color: #888;
+      color: var(--text-secondary);
       font-size: 0.9em;
     }
     
     .parameter-description {
-      color: #666;
+      color: var(--text-secondary);
       margin-top: 5px;
     }
     
@@ -686,7 +732,6 @@ function build() {
           
           <div class="test-section">
             <button class="btn" id="testBtn" onclick="fetchRandomImage()">获取随机图片</button>
-            <button class="btn btn-secondary" style="margin-left: 10px;" onclick="window.location.href='/api?count=1&return=redirect'">直接访问API</button>
           </div>
           
           <div class="preview-container">
@@ -709,9 +754,10 @@ function build() {
               <button class="active" onclick="switchDevice('pc', this)">PC 端</button>
               <button onclick="switchDevice('pe', this)">移动端</button>
             </div>
-            <span id="imageCount" style="color:#888;"></span>
+            <span id="imageCount" style="color: var(--text-secondary);"></span>
           </div>
           <div id="galleryGrid" class="gallery-grid"></div>
+          <button id="loadMoreBtn" class="load-more-btn" style="display:none;" onclick="loadMoreImages()">加载更多</button>
         </div>
       </div>
     </div>
