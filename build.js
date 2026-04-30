@@ -262,201 +262,516 @@ function build() {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PicFlow API</title>
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
     body {
-      font-family: Arial, sans-serif;
-      max-width: 1000px;
-      margin: 50px auto;
-      padding: 20px;
-      background: #f5f5f5;
-    }
-    .container {
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    h1 {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
       color: #333;
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    /* 头部样式 */
+    .header {
       text-align: center;
+      padding: 40px 0 30px;
+      color: white;
+    }
+    
+    .header h1 {
+      font-size: 2.5em;
+      font-weight: 700;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .header p {
+      font-size: 1.1em;
+      opacity: 0.9;
+    }
+    
+    /* 导航栏 */
+    .nav {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
       margin-bottom: 30px;
     }
-    h2 {
-      color: #555;
-      margin-top: 40px;
-      margin-bottom: 20px;
-      border-bottom: 1px solid #eee;
-      padding-bottom: 10px;
-    }
-    h3 {
-      color: #666;
-      margin-top: 20px;
-      margin-bottom: 15px;
-    }
-    .info-item {
-      display: flex;
-      justify-content: space-between;
-      padding: 10px 0;
-      border-bottom: 1px solid #eee;
-    }
-    .info-item:last-child {
-      border-bottom: none;
-    }
-    .label {
-      font-weight: bold;
-      color: #555;
-    }
-    .value {
-      color: #777;
-    }
-    .status {
-      text-align: center;
-      color: #28a745;
-      font-size: 18px;
-      margin-bottom: 20px;
-    }
-    .api-link {
-      text-align: center;
-      margin-top: 20px;
-      padding: 15px;
-      background: #f8f9fa;
-      border-radius: 5px;
-    }
-    .api-link a {
-      color: #007bff;
+    
+    .nav a {
+      display: inline-block;
+      padding: 12px 30px;
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(10px);
+      color: white;
       text-decoration: none;
+      border-radius: 50px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255,255,255,0.3);
     }
-    .documentation {
-      margin-top: 40px;
+    
+    .nav a:hover {
+      background: rgba(255,255,255,0.3);
+      transform: translateY(-2px);
     }
-    .endpoint {
+    
+    .nav a.active {
+      background: white;
+      color: #667eea;
+    }
+    
+    /* 卡片样式 */
+    .card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    
+    .card-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px 30px;
+    }
+    
+    .card-header h2 {
+      font-size: 1.5em;
+      margin: 0;
+    }
+    
+    .card-body {
+      padding: 30px;
+    }
+    
+    /* 状态信息 */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: #e8f5e9;
+      color: #2e7d32;
+      border-radius: 20px;
+      font-weight: 500;
+      font-size: 0.9em;
+    }
+    
+    .status-badge::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: #4caf50;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin: 25px 0;
+    }
+    
+    .info-item {
       background: #f8f9fa;
-      padding: 15px;
-      border-radius: 5px;
-      margin-bottom: 20px;
+      padding: 15px 20px;
+      border-radius: 10px;
+      border-left: 4px solid #667eea;
     }
-    .endpoint h4 {
-      margin-top: 0;
+    
+    .info-item .label {
+      font-size: 0.85em;
+      color: #888;
+      margin-bottom: 5px;
+    }
+    
+    .info-item .value {
+      font-weight: 600;
       color: #333;
     }
-    .parameter {
-      margin-left: 20px;
+    
+    /* 测试按钮 */
+    .test-section {
+      text-align: center;
+      margin: 25px 0;
+    }
+    
+    .btn {
+      display: inline-block;
+      padding: 14px 40px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 1em;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+    }
+    
+    .btn:active {
+      transform: translateY(0);
+    }
+    
+    .btn-secondary {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+    }
+    
+    .btn-secondary:hover {
+      box-shadow: 0 6px 20px rgba(245, 87, 108, 0.5);
+    }
+    
+    /* 预览图片 */
+    .preview-container {
+      margin-top: 20px;
+      text-align: center;
+    }
+    
+    .preview-image {
+      max-width: 100%;
+      max-height: 400px;
+      border-radius: 12px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+    
+    /* 图库样式 */
+    .gallery-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .gallery-controls .device-toggle {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .device-toggle button {
+      padding: 8px 20px;
+      border: 2px solid #667eea;
+      background: white;
+      color: #667eea;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    
+    .device-toggle button.active {
+      background: #667eea;
+      color: white;
+    }
+    
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 15px;
+    }
+    
+    .gallery-item {
+      aspect-ratio: 1;
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    
+    .gallery-item:hover {
+      transform: scale(1.05);
+      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    }
+    
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    /* 文档样式 */
+    .doc-section {
+      margin-top: 30px;
+    }
+    
+    .doc-section h3 {
+      color: #667eea;
+      margin: 25px 0 15px;
+      font-size: 1.2em;
+    }
+    
+    .endpoint {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+    
+    .endpoint h4 {
+      color: #333;
       margin-bottom: 10px;
+      font-size: 1.1em;
     }
+    
+    .parameter {
+      margin: 10px 0;
+      padding-left: 15px;
+      border-left: 2px solid #667eea;
+    }
+    
     .parameter-name {
-      font-weight: bold;
-      color: #555;
+      font-weight: 600;
+      color: #667eea;
     }
+    
     .parameter-type {
       color: #888;
       font-size: 0.9em;
     }
+    
     .parameter-description {
-      margin-top: 5px;
       color: #666;
+      margin-top: 5px;
     }
+    
     .example {
-      background: #f0f0f0;
-      padding: 15px;
-      border-radius: 5px;
+      background: #2d3748;
+      color: #e2e8f0;
+      padding: 20px;
+      border-radius: 10px;
       margin: 15px 0;
-      font-family: monospace;
-      white-space: pre-wrap;
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 0.9em;
+      overflow-x: auto;
     }
+    
     .response {
-      background: #f0f8ff;
+      background: #edf2f7;
       padding: 15px;
-      border-radius: 5px;
+      border-radius: 10px;
       margin: 15px 0;
     }
+    
     .error-code {
-      margin-left: 20px;
-      margin-bottom: 10px;
+      margin: 10px 0;
+      padding: 10px 15px;
+      background: #fff3f3;
+      border-radius: 8px;
+      border-left: 4px solid #f56565;
+    }
+    
+    .error-code .parameter-name {
+      color: #f56565;
+    }
+    
+    /* 页脚 */
+    .footer {
+      text-align: center;
+      padding: 30px 0;
+      color: rgba(255,255,255,0.8);
+      font-size: 0.9em;
+    }
+    
+    .footer a {
+      color: white;
+      text-decoration: none;
+    }
+    
+    .footer a:hover {
+      text-decoration: underline;
+    }
+    
+    /* 页面切换 */
+    .page {
+      display: none;
+    }
+    
+    .page.active {
+      display: block;
+    }
+    
+    /* 响应式 */
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2em;
+      }
+      
+      .nav {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .nav a {
+        width: 80%;
+        text-align: center;
+      }
+      
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .gallery-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>PicFlow API</h1>
-    <div class="status">✅ 服务运行中</div>
-    
-    <div class="info-item">
-      <span class="label">服务状态</span>
-      <span class="value">正常</span>
+    <div class="header">
+      <h1>PicFlow API</h1>
+      <p>基于边缘计算的随机图片服务</p>
     </div>
     
-    <div class="info-item">
-      <span class="label">API 版本</span>
-      <span class="value">3.0</span>
+    <div class="nav">
+      <a href="javascript:void(0)" class="active" onclick="showPage('home')">首页</a>
+      <a href="javascript:void(0)" onclick="showPage('gallery')">图库</a>
+      <a href="javascript:void(0)" onclick="showPage('docs')">文档</a>
     </div>
     
-    <div class="info-item">
-      <span class="label">图片格式</span>
-      <span class="value">WebP</span>
-    </div>
-    
-    <div class="info-item">
-      <span class="label">设备支持</span>
-      <span class="value">PC, 移动端</span>
-    </div>
-    
-    <div class="api-link">
-      <a href="/image">测试API接口</a>
-    </div>
-    
-    <div class="documentation">
-      <h2>API 文档</h2>
-      
-      <h3>基本信息</h3>
-      <p>PicFlow API 是一个轻量级的随机图片服务，支持多种现代图片格式，自动适配不同设备类型。</p>
-      
-      <h3>API 端点</h3>
-      <div class="endpoint">
-        <h4>GET /api</h4>
-        <p>获取随机图片</p>
-        
-        <h4>请求参数</h4>
-        <div class="parameter">
-          <div class="parameter-name">count</div>
-          <div class="parameter-type">可选，整数</div>
-          <div class="parameter-description">返回图片数量，默认1，最大50</div>
+    <!-- 首页 -->
+    <div id="home-page" class="page active">
+      <div class="card">
+        <div class="card-header">
+          <h2>服务状态</h2>
         </div>
-        <div class="parameter">
-          <div class="parameter-name">type</div>
-          <div class="parameter-type">可选，字符串</div>
-          <div class="parameter-description">设备类型，可选值：pc（电脑）、pe（移动设备），默认自动检测</div>
+        <div class="card-body">
+          <div class="status-badge">服务运行中</div>
+          
+          <div class="info-grid">
+            <div class="info-item">
+              <div class="label">API 版本</div>
+              <div class="value">3.0</div>
+            </div>
+            <div class="info-item">
+              <div class="label">图片格式</div>
+              <div class="value">WebP</div>
+            </div>
+            <div class="info-item">
+              <div class="label">设备支持</div>
+              <div class="value">PC / 移动端</div>
+            </div>
+            <div class="info-item">
+              <div class="label">部署平台</div>
+              <div class="value">EdgeOne Pages</div>
+            </div>
+          </div>
+          
+          <div class="test-section">
+            <button class="btn" id="testBtn" onclick="fetchRandomImage()">获取随机图片</button>
+            <button class="btn btn-secondary" style="margin-left: 10px;" onclick="window.location.href='/api?count=1&return=redirect'">直接访问API</button>
+          </div>
+          
+          <div class="preview-container">
+            <img id="previewImage" class="preview-image" style="display:none;" alt="预览图片" />
+            <p id="previewInfo" style="margin-top:10px;color:#888;font-size:0.9em;"></p>
+          </div>
         </div>
-        <div class="parameter">
-          <div class="parameter-name">format</div>
-          <div class="parameter-type">可选，字符串</div>
-          <div class="parameter-description">图片格式，可选值：webp，默认webp</div>
+      </div>
+    </div>
+    
+    <!-- 图库页 -->
+    <div id="gallery-page" class="page">
+      <div class="card">
+        <div class="card-header">
+          <h2>图库浏览</h2>
         </div>
-        <div class="parameter">
-          <div class="parameter-name">return</div>
-          <div class="parameter-type">可选，字符串</div>
-          <div class="parameter-description">返回类型，可选值：redirect（重定向到图片）、json（返回JSON响应）、text（纯文本链接），默认json</div>
+        <div class="card-body">
+          <div class="gallery-controls">
+            <div class="device-toggle">
+              <button class="active" onclick="switchDevice('pc', this)">PC 端</button>
+              <button onclick="switchDevice('pe', this)">移动端</button>
+            </div>
+            <span id="imageCount" style="color:#888;"></span>
+          </div>
+          <div id="galleryGrid" class="gallery-grid"></div>
         </div>
-        
-        <h4>响应格式</h4>
-        <div class="response">
-          <pre>{
+      </div>
+    </div>
+    
+    <!-- 文档页 -->
+    <div id="docs-page" class="page">
+      <div class="card">
+        <div class="card-header">
+          <h2>API 文档</h2>
+        </div>
+        <div class="card-body doc-section">
+          <h3>基本信息</h3>
+          <p>PicFlow API 是一个轻量级的随机图片服务，基于EdgeOne Pages边缘函数实现，支持WebP图片格式，自动适配不同设备类型。</p>
+          
+          <h3>API 端点</h3>
+          <div class="endpoint">
+            <h4>GET /api</h4>
+            <p>获取随机图片，支持多种返回格式</p>
+            
+            <h4>请求参数</h4>
+            <div class="parameter">
+              <div class="parameter-name">count</div>
+              <div class="parameter-type">可选，整数</div>
+              <div class="parameter-description">返回图片数量，默认1，最大50</div>
+            </div>
+            <div class="parameter">
+              <div class="parameter-name">type</div>
+              <div class="parameter-type">可选，字符串</div>
+              <div class="parameter-description">设备类型，可选值：pc（电脑）、pe（移动设备），默认自动检测</div>
+            </div>
+            <div class="parameter">
+              <div class="parameter-name">format</div>
+              <div class="parameter-type">可选，字符串</div>
+              <div class="parameter-description">图片格式，可选值：webp，默认webp</div>
+            </div>
+            <div class="parameter">
+              <div class="parameter-name">return</div>
+              <div class="parameter-type">可选，字符串</div>
+              <div class="parameter-description">返回类型，可选值：redirect（重定向到图片）、json（返回JSON响应）、text（纯文本链接），默认json</div>
+            </div>
+            
+            <h4>响应格式</h4>
+            <div class="response">
+              <pre>{
   "success": true,
   "count": 10,
   "type": "pc",
   "format": "webp",
   "images": [
     {
-      "url": "https://example.com/converted/pc/webp/1.webp",
+      "url": "https://example.com/converted/pc/webp/xxx.webp",
       "format": "webp",
       "type": "pc"
-    },
-    ...
+    }
   ]
 }</pre>
-        </div>
-        
-        <h4>使用示例</h4>
-        <div class="example">
-# 获取10张随机图片
+            </div>
+            
+            <h4>使用示例</h4>
+            <div class="example"># 获取10张随机图片
 GET /api?count=10
 
 # 获取移动设备图片
@@ -465,57 +780,134 @@ GET /api?type=pe&count=5
 # 直接重定向到图片
 GET /api?count=1&return=redirect
 
-# 指定图片格式
-GET /api?format=webp&count=3
-        </div>
-      </div>
-      
-      <div class="endpoint">
-        <h4>GET /image</h4>
-        <p>直接返回随机图片文件流</p>
-        
-        <h4>请求参数</h4>
-        <p>无</p>
-        
-        <h4>响应</h4>
-        <p>返回图片文件流，根据设备类型和浏览器支持自动选择最佳图片格式</p>
-        
-        <h4>使用示例</h4>
-        <div class="example">
-# 直接获取随机图片
+# 获取纯文本链接
+GET /api?count=5&return=text</div>
+          </div>
+          
+          <div class="endpoint">
+            <h4>GET /image</h4>
+            <p>直接返回随机图片文件流（302重定向）</p>
+            
+            <h4>请求参数</h4>
+            <p>无</p>
+            
+            <h4>使用示例</h4>
+            <div class="example"># 直接获取随机图片
 GET /image
 
 # 在HTML中使用
 &lt;img src="https://your-domain.com/image" /&gt;
+
+# 在CSS中使用
+background-image: url('https://your-domain.com/image');</div>
+          </div>
+          
+          <h3>错误码</h3>
+          <div class="error-code">
+            <div class="parameter-name">404</div>
+            <div class="parameter-description">未找到图片</div>
+          </div>
+          <div class="error-code">
+            <div class="parameter-name">500</div>
+            <div class="parameter-description">服务器内部错误</div>
+          </div>
+          
+          <h3>自动检测机制</h3>
+          <p>API 会自动检测以下信息：</p>
+          <ul style="margin-left:20px;">
+            <li><strong>设备类型</strong>：根据用户代理字符串检测是电脑还是移动设备</li>
+            <li><strong>图片格式</strong>：根据浏览器支持检测最佳图片格式（WebP）</li>
+          </ul>
+          <p style="margin-top:10px;">这意味着您可以直接访问 <code>/api</code> 或 <code>/image</code> 而不需要指定任何参数，API 会自动为您选择最合适的配置。</p>
         </div>
       </div>
-      
-      <h3>错误码</h3>
-      <div class="error-code">
-        <div class="parameter-name">400</div>
-        <div class="parameter-description">请求参数错误</div>
-      </div>
-      <div class="error-code">
-        <div class="parameter-name">500</div>
-        <div class="parameter-description">服务器内部错误</div>
-      </div>
-      
-      <h3>自动检测机制</h3>
-      <p>API 会自动检测以下信息：</p>
-      <ul>
-        <li><strong>设备类型</strong>：根据用户代理字符串检测是电脑还是移动设备</li>
-        <li><strong>图片格式</strong>：根据浏览器支持检测最佳图片格式（WebP）</li>
-      </ul>
-      <p>这意味着您可以直接访问 <code>/api</code> 或 <code>/image</code> 而不需要指定任何参数，API 会自动为您选择最合适的配置。</p>
     </div>
   </div>
   
-  <div class="footer" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; text-align: center; color: #888; font-size: 14px;">
-    <p>&copy; 2026 <a href="https://www.sylv.top" target="_blank" style="color: #888; text-decoration: none;">Sylvy</a>. All rights reserved.</p>
+  <div class="footer">
+    <p>&copy; 2026 <a href="https://www.sylv.top" target="_blank">Sylvy</a>. All rights reserved.</p>
     <p>
-      <a href="https://beian.miit.gov.cn/" target="_blank" style="color: #888; text-decoration: none;">豫ICP备2026013756号-1</a>
+      <a href="https://beian.miit.gov.cn/" target="_blank">豫ICP备2026013756号-1</a>
     </p>
   </div>
+  
+  <script>
+    // 页面切换
+    function showPage(page) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav a').forEach(a => a.classList.remove('active'));
+      document.getElementById(page + '-page').classList.add('active');
+      event.target.classList.add('active');
+      
+      if (page === 'gallery') {
+        loadGallery('pc');
+      }
+    }
+    
+    // 获取随机图片
+    function fetchRandomImage() {
+      const btn = document.getElementById('testBtn');
+      const img = document.getElementById('previewImage');
+      const info = document.getElementById('previewInfo');
+      
+      btn.textContent = '加载中...';
+      btn.disabled = true;
+      
+      // 使用时间戳避免缓存
+      fetch('/api?count=1&_t=' + Date.now())
+        .then(r => r.json())
+        .then(data => {
+          if (data.success && data.images.length > 0) {
+            img.src = data.images[0].url + '?_t=' + Date.now();
+            img.style.display = 'block';
+            info.textContent = '格式: ' + data.format + ' | 类型: ' + data.type;
+          }
+        })
+        .catch(err => {
+          info.textContent = '加载失败，请重试';
+        })
+        .finally(() => {
+          btn.textContent = '获取随机图片';
+          btn.disabled = false;
+        });
+    }
+    
+    // 图库相关
+    let imageData = null;
+    
+    function switchDevice(type, btn) {
+      document.querySelectorAll('.device-toggle button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      loadGallery(type);
+    }
+    
+    function loadGallery(type) {
+      if (!imageData) {
+        fetch('/image-list.json')
+          .then(r => r.json())
+          .then(data => {
+            imageData = data;
+            renderGallery(type);
+          });
+      } else {
+        renderGallery(type);
+      }
+    }
+    
+    function renderGallery(type) {
+      const grid = document.getElementById('galleryGrid');
+      const count = document.getElementById('imageCount');
+      const images = imageData[type]?.webp || [];
+      
+      count.textContent = '共 ' + images.length + ' 张图片';
+      
+      grid.innerHTML = images.slice(0, 50).map(name => 
+        '<div class="gallery-item" onclick="window.location.href=\'/converted/' + type + '/webp/' + name + '.webp\'">' +
+          '<img src="/converted/' + type + '/webp/' + name + '.webp" loading="lazy" alt="' + name + '" />' +
+        '</div>'
+      ).join('');
+    }
+  </script>
 </body>
 </html>
   `;
