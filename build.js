@@ -260,7 +260,7 @@ function build() {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PicFlow API</title>
+  <title>OnePic API</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>️</text></svg>">
   <style>
     :root {
@@ -756,7 +756,7 @@ function build() {
 <body>
   <div class="container">
     <div class="header">
-      <h1>PicFlow API</h1>
+      <h1>OnePic API</h1>
       <p>基于边缘计算的随机图片服务</p>
     </div>
     
@@ -844,7 +844,7 @@ function build() {
         </div>
         <div class="card-body doc-section">
           <h3>基本信息</h3>
-          <p>PicFlow API 是一个轻量级的随机图片服务，基于EdgeOne Pages边缘函数实现，支持WebP图片格式，自动适配不同设备类型。</p>
+          <p>OnePic API 是一个轻量级的随机图片服务，基于EdgeOne Pages边缘函数实现，支持WebP图片格式，自动适配不同设备类型。</p>
           
           <h3>API 端点</h3>
           <div class="endpoint">

@@ -1,7 +1,7 @@
 {
-  "name": "picflow-api",
+  "name": "onepic-api",
   "version": "3.0.0",
-  "description": "PicFlow API - 专业的随机图片处理服务",
+  "description": "OnePic API - 专业的随机图片处理服务",
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
@@ -10,7 +10,7 @@
     "deploy": "wrangler deploy"
   },
   "keywords": [
-    "picflow",
+    "onepic",
     "api",
     "image",
     "random",
